@@ -44,5 +44,12 @@ public class LoginPage {
         clickLogin();
     }
 
+    public ProductPage login (String user, String pass){
+        driver.findElement(userNameFile).sendKeys(user);
+        driver.findElement(passWordFile).sendKeys(pass);
+        driver.findElement(loginBtn).click();
+        return  new ProductPage(driver);
+    }
+
 
 }
