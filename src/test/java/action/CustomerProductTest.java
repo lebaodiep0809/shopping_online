@@ -2,14 +2,11 @@ package action;
 
 import UI.LoginPage;
 import UI.ProductPage;
-import UI.YourCart;
-import org.openqa.selenium.By;
+import UI.YourCartPage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -136,7 +133,7 @@ public class CustomerProductTest {
     @Test
     public void testShoppingCart(){
         ProductPage page = new ProductPage(driver);
-        YourCart cart = new YourCart(driver);
+        YourCartPage cart = new YourCartPage(driver);
         page.clickShoppingCart();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/cart.html");
         Assert.assertEquals(cart.getLogo(),"Swag Labs");

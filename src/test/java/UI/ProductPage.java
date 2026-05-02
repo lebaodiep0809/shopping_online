@@ -56,6 +56,7 @@ public class ProductPage {
     }
 
     public String getTitle(){
+
         return wait.until(ExpectedConditions.visibilityOfElementLocated(proName)).getText();
     }
 
@@ -133,6 +134,7 @@ public class ProductPage {
     }
 
     public void removeBackpack(){
+
         wait.until(ExpectedConditions.elementToBeClickable(removeBack)).click();
     }
 
