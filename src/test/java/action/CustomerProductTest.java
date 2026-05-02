@@ -3,6 +3,7 @@ package action;
 import UI.LoginPage;
 import UI.ProductPage;
 import UI.YourCartPage;
+import Utils.ConfigReader;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
@@ -12,14 +13,20 @@ import org.testng.annotations.Test;
 
 public class CustomerProductTest {
     WebDriver driver;
+    ConfigReader config;
 
     @BeforeMethod
     public void setUp(){
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
-        LoginPage LoginPage = new LoginPage(driver);
-        ProductPage ProductPage = LoginPage.login("standard_user", "secret_sauce");
+        config = new ConfigReader();
+        driver.get(config.getUrl());
+        LoginPage login = new LoginPage(driver);
+        login.performLogin(
+                config.getUsername(),
+                config.getPassword()
+        );
+
     }
     @Test
     public void testProductPageUI(){
@@ -29,7 +36,7 @@ public class CustomerProductTest {
         //Kiểm tra tên trang
         Assert.assertEquals(page.getTitle(),"Products");
         //Kiểm tra giỏ hàng
-        Assert.assertTrue(page.isShoppingCartDisplayed());
+        Assert.assertTrue(page.isShoppingCartEnable());
         //Kiểm tra sắp xêps
         Assert.assertTrue(page.isArrangeDisplayed());
         //Kiểm tra gias trị trong cbx Sắp xếp
@@ -63,8 +70,11 @@ public class CustomerProductTest {
         ProductPage page = new ProductPage(driver);
 
         page.addBackpack();
+        Thread.sleep(3000);
         page.addBikeLight();
+        Thread.sleep(3000);
         page.addFleeceJacket();
+        Thread.sleep(3000);
 
         Assert.assertEquals(page.getShoppingCartCount(), 3);
 
@@ -74,12 +84,16 @@ public class CustomerProductTest {
     }
 
     @Test
-    public void testRemoveProductBikeLight(){
+    public void testRemoveProductBikeLight() throws InterruptedException {
         ProductPage page = new ProductPage(driver);
         page.addBackpack();
+        Thread.sleep(3000);
         page.addBikeLight();
+        Thread.sleep(3000);
         page.addFleeceJacket();
+        Thread.sleep(3000);
         page.removeBikeLight();
+        Thread.sleep(3000);
 
         Assert.assertEquals(page.getShoppingCartCount(),2);
         Assert.assertEquals(page.removeBackpackText(),"Remove");
@@ -140,6 +154,30 @@ public class CustomerProductTest {
         Assert.assertEquals(cart.getTilte(),"Your Cart");
     }
 
+    @Test
+    public void testRovemoAllProductAndClickShoppingCart() throws InterruptedException {
+        ProductPage page = new ProductPage(driver);
+        YourCartPage cart = new YourCartPage(driver);
+        page.addBackpack();
+        Thread.sleep(3000);
+        page.addBikeLight();
+        Thread.sleep(3000);
+        page.addFleeceJacket();
+        Thread.sleep(3000);
+        page.removeBackpack();
+        Thread.sleep(3000);
+        page.removeBikeLight();
+        Thread.sleep(3000);
+        page.removeFleeceJacket();
+        Thread.sleep(3000);
+        Assert.assertEquals(page.addBikeLightText(),"Add to cart");
+        Assert.assertEquals(page.addBackpackText(),"Add to cart");
+        Assert.assertEquals(page.addFleeceJacketText(),"Add to cart");
+        page.clickShoppingCart();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/cart.html");
+        Assert.assertEquals(cart.getLogo(),"Swag Labs");
+        Assert.assertEquals(cart.getTilte(),"Your Cart");
+    }
 
 
     @AfterMethod

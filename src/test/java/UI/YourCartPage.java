@@ -20,6 +20,8 @@ public class YourCartPage {
     private By title = By.xpath("//span[@class='title']");
     private By qtyTilte = By.xpath("//div[@class='cart_quantity_label']");
     private By desTilte = By.xpath("//div[@class='cart_desc_label']");
+    private By shoppingCart = By.xpath("//a[@class='shopping_cart_link']");
+    private By shoppingCartCount = By.xpath("//span[@class='shopping_cart_badge']");
 
     //Backpack
     private By productBack = By.xpath("//div[text()='Sauce Labs Backpack']");
@@ -30,7 +32,7 @@ public class YourCartPage {
 
     //Bike Light
     private By productBike = By.xpath("//div[text()='Sauce Labs Bike Light']");
-    private By inforBike = By.xpath("//div[text()='//div[text()='Sauce Labs Bike Light']/ancestor::div[@class='cart_item']/descendant::div[@class='inventory_item_desc']");
+    private By inforBike = By.xpath("//div[text()='Sauce Labs Bike Light']/ancestor::div[@class='cart_item']/descendant::div[@class='inventory_item_desc']");
     private By serialBike = By.xpath("//div[text()='Sauce Labs Bike Light']/ancestor::div[@class='cart_item']/descendant::div[@class='cart_quantity']");
     private By removeBike = By.xpath("//div[text()='Sauce Labs Bike Light']/ancestor::div[@class='cart_item']/descendant::button[@class='btn btn_secondary btn_small cart_button']");
     private By priceBike = By.xpath("//div[text()='Sauce Labs Bike Light']/ancestor::div[@class='cart_item']/descendant::div[@class='inventory_item_price']");
@@ -63,6 +65,25 @@ public class YourCartPage {
 
     public String getDesTilte(){
         return wait.until(ExpectedConditions.visibilityOfElementLocated(desTilte)).getText();
+    }
+
+    public boolean isShoppingCartEnable(){
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCart)).isEnabled();
+    }
+    public boolean isShoppingCartCountDisable(){
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCartCount)).isDisplayed();
+    }
+    public int getShoppingCartCount(){
+        try {
+            String text = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(shoppingCartCount)
+            ).getText().trim();
+
+            return Integer.parseInt(text);
+
+        } catch (Exception e){
+            return 0;
+        }
     }
 
     public String getProductBack(){

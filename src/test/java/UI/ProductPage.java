@@ -86,8 +86,8 @@ public class ProductPage {
                 )
         ).getText();
     }
-    public boolean isShoppingCartDisplayed(){
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCart)).isDisplayed();
+    public boolean isShoppingCartEnable(){
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCart)).isEnabled();
     }
 
     public void clickShoppingCart(){
