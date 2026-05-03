@@ -25,6 +25,8 @@ public class YourInformation {
     private By zipPostalCodeFile = By.xpath("//input[@id='postal-code']");
     private By cancel = By.xpath("//button[@id='cancel']");
     private By continueInfor = By.xpath("//input[@id='continue']");
+    private By errorMessage = By.cssSelector("[data-test='error']");
+
 
     public String getLogo(){
         return wait.until(ExpectedConditions.visibilityOfElementLocated(logo)).getText();
@@ -100,9 +102,34 @@ public class YourInformation {
         wait.until(ExpectedConditions.elementToBeClickable(continueInfor)).click();
     }
 
+    public  void fillInformationForm (String firstName, String lastName, String zipCode){
+        enterFirstName(firstName);
+        enterLastName(lastName);
+        enterZipCode(zipCode);
+    }
 
+    public void performInformatiion(String firstName, String lastName, String zipCode){
+        fillInformationForm(firstName, lastName, zipCode);
+        clickContinue();
+    }
 
+    public String getRequiredFirstName() {
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorMessage)
+        ).getText();
+    }
 
+    public String getRequiredLastName() {
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorMessage)
+        ).getText();
+    }
+
+    public String getRequiredPostalCode() {
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorMessage)
+        ).getText();
+    }
 
 
 }
