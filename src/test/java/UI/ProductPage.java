@@ -1,5 +1,6 @@
 package UI;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -208,5 +209,23 @@ public class ProductPage {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(removeJack)).getText();
     }
 
+    public void addThreeProduct() throws InterruptedException {
+
+        addBackpack();
+        Thread.sleep(3000);
+        addBikeLight();
+        Thread.sleep(3000);
+        addFleeceJacket();
+        Thread.sleep(3000);
+    }
+
+    public void removeThreeProduct() throws InterruptedException {
+        removeBackpack();
+        Thread.sleep(3000);
+        removeBikeLight();
+        Thread.sleep(3000);
+        removeFleeceJacket();
+        Thread.sleep(3000);
+    }
 
 }

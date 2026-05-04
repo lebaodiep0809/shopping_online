@@ -26,20 +26,15 @@ public class CustomerYourCartTest {
                 config.getUsername(),
                 config.getPassword()
         );
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addBikeLight();
-        Thread.sleep(2000);
-        productPage.addFleeceJacket();
-        Thread.sleep(2000);
-        productPage.addBackpack();
-        Thread.sleep(2000);
-        productPage.clickShoppingCart();
-        Thread.sleep(2000);
+
     }
 
     @Test
-    public void testYourCartPageUI(){
+    public void testYourCartPageUI() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
+        ProductPage page = new ProductPage(driver);
+        page.addThreeProduct();
+        page.clickShoppingCart();
         //Kiểm tra logo
         Assert.assertEquals(youCart.getLogo(),"Swag Labs");
         //Kiểm tra tilte
@@ -74,7 +69,10 @@ public class CustomerYourCartTest {
     }
 
     @Test
-    public void testRemoveProductBikeLight(){
+    public void testRemoveProductBikeLight() throws InterruptedException {
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         YourCartPage youCart = new YourCartPage(driver);
         youCart.clickRemoveBike();
         Assert.assertEquals(youCart.getShoppingCartCount(),2);
@@ -96,20 +94,21 @@ public class CustomerYourCartTest {
 
     @Test
     public void testRemoveAllProduct() throws InterruptedException {
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         YourCartPage youCart = new YourCartPage(driver);
-        youCart.clickRemoveBike();
-        Thread.sleep(2000);
-        youCart.clickRemoveBack();
-        Thread.sleep(2000);
-        youCart.clickRemoveJacket();
+        youCart.removeThreeProduct();
         Assert.assertEquals(youCart.getShoppingCartCount(),0);
     }
 
     @Test
-    public void testNotRemoveProductAndClickContinueShopping(){
+    public void testNotRemoveProductAndClickContinueShopping() throws InterruptedException {
         ProductPage page = new ProductPage(driver);
         YourCartPage youCart = new YourCartPage(driver);
-
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         youCart.clickContinueShopping();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
         Assert.assertEquals(page.getShoppingCartCount(),3);
@@ -119,9 +118,13 @@ public class CustomerYourCartTest {
     }
 
     @Test
-    public void testRemoveProductBikeLightAndClickContinueShopping(){
+    public void testRemoveProductBikeLightAndClickContinueShopping() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
         ProductPage page = new ProductPage(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
+        Thread.sleep(2000);
         youCart.clickRemoveBike();
         youCart.clickContinueShopping();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
@@ -135,11 +138,10 @@ public class CustomerYourCartTest {
     public void testRemoveAllProductAndClickContinueShopping() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
         ProductPage page = new ProductPage(driver);
-        youCart.clickRemoveBike();
-        Thread.sleep(1000);
-        youCart.clickRemoveBack();
-        Thread.sleep(1000);
-        youCart.clickRemoveJacket();
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
+        youCart.removeThreeProduct();
         youCart.clickContinueShopping();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
         Assert.assertEquals(page.getShoppingCartCount(),0);
@@ -149,10 +151,12 @@ public class CustomerYourCartTest {
     }
 
     @Test
-    public void testNotRemoveProductAndClickCheckout(){
+    public void testNotRemoveProductAndClickCheckout() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
         YourInformation yourInformation = new YourInformation(driver);
-
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         youCart.clickCheckout();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-one.html");
         Assert.assertEquals(yourInformation.getLogo(),"Swag Labs");
@@ -162,9 +166,12 @@ public class CustomerYourCartTest {
     }
 
     @Test
-    public void testRemoveProductBikeLightAndClickCheckout(){
+    public void testRemoveProductBikeLightAndClickCheckout() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
         YourInformation yourInformation = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         youCart.clickRemoveBike();
         youCart.clickCheckout();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-one.html");
@@ -177,11 +184,10 @@ public class CustomerYourCartTest {
     public void testRemoveAllProductAndClickCheckout() throws InterruptedException {
         YourCartPage youCart = new YourCartPage(driver);
         YourInformation yourInformation = new YourInformation(driver);
-        youCart.clickRemoveBike();
-        Thread.sleep(1000);
-        youCart.clickRemoveBack();
-        Thread.sleep(1000);
-        youCart.clickRemoveJacket();
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
+        youCart.removeThreeProduct();
         youCart.clickCheckout();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-one.html");
         Assert.assertEquals(yourInformation.getLogo(),"Swag Labs");
@@ -189,6 +195,16 @@ public class CustomerYourCartTest {
         Assert.assertEquals(yourInformation.getShoppingCartCount(),0);
     }
 
+    @Test
+    public void testClickCheckoutWhenNoProductAdded(){
+        ProductPage productPage = new ProductPage(driver);
+        YourCartPage youCart = new YourCartPage(driver);
+        productPage.clickShoppingCart();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/cart.html");
+        Assert.assertEquals(youCart.getLogo(),"Swag Labs");
+        Assert.assertEquals(youCart.getTilte(),"Your Cart");
+        Assert.assertEquals(youCart.getShoppingCartCount(),0);
+    }
     @AfterMethod
     public void afterMethod(){
         if (driver != null) {

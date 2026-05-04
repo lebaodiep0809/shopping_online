@@ -69,12 +69,7 @@ public class CustomerProductTest {
     public void testAddToCartProduct() throws InterruptedException {
         ProductPage page = new ProductPage(driver);
 
-        page.addBackpack();
-        Thread.sleep(3000);
-        page.addBikeLight();
-        Thread.sleep(3000);
-        page.addFleeceJacket();
-        Thread.sleep(3000);
+        page.addThreeProduct();
 
         Assert.assertEquals(page.getShoppingCartCount(), 3);
 
@@ -86,12 +81,7 @@ public class CustomerProductTest {
     @Test
     public void testRemoveProductBikeLight() throws InterruptedException {
         ProductPage page = new ProductPage(driver);
-        page.addBackpack();
-        Thread.sleep(3000);
-        page.addBikeLight();
-        Thread.sleep(3000);
-        page.addFleeceJacket();
-        Thread.sleep(3000);
+        page.addThreeProduct();
         page.removeBikeLight();
         Thread.sleep(3000);
 
@@ -158,18 +148,10 @@ public class CustomerProductTest {
     public void testRovemoAllProductAndClickShoppingCart() throws InterruptedException {
         ProductPage page = new ProductPage(driver);
         YourCartPage cart = new YourCartPage(driver);
-        page.addBackpack();
+        page.addThreeProduct();
         Thread.sleep(3000);
-        page.addBikeLight();
-        Thread.sleep(3000);
-        page.addFleeceJacket();
-        Thread.sleep(3000);
-        page.removeBackpack();
-        Thread.sleep(3000);
-        page.removeBikeLight();
-        Thread.sleep(3000);
-        page.removeFleeceJacket();
-        Thread.sleep(3000);
+        page.removeThreeProduct();
+
         Assert.assertEquals(page.addBikeLightText(),"Add to cart");
         Assert.assertEquals(page.addBackpackText(),"Add to cart");
         Assert.assertEquals(page.addFleeceJacketText(),"Add to cart");

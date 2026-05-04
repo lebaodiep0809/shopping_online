@@ -31,22 +31,15 @@ public class CustomerYourInformationTest {
                 config.getUsername(),
                 config.getPassword()
         );
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addBikeLight();
-        Thread.sleep(2000);
-        productPage.addFleeceJacket();
-        Thread.sleep(2000);
-        productPage.addBackpack();
-        Thread.sleep(2000);
-        productPage.clickShoppingCart();
-        Thread.sleep(2000);
-
     }
 
     @Test
-    public void testYourInformationUIWithoutNotRemoveProduct(){
+    public void testYourInformationUIWithoutNotRemoveProduct() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
         Assert.assertEquals(yourInfor.getTitle(),"Checkout: Your Information");
@@ -62,9 +55,12 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testYourInformationUIWithoutRemoveBikeProduct(){
+    public void testYourInformationUIWithoutRemoveBikeProduct() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickRemoveBike();
         cartPage.clickCheckout();
         Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
@@ -81,12 +77,15 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testYourInformationUIWithoutRemoveAllProduct(){
+    public void testYourInformationUIWithoutRemoveAllProduct() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
-        cartPage.clickRemoveBike();
-        cartPage.clickRemoveJacket();
-        cartPage.clickRemoveBack();
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
+        Thread.sleep(3000);
+        cartPage.removeThreeProduct();
+        Thread.sleep(3000);
         cartPage.clickCheckout();
         Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
         Assert.assertEquals(yourInfor.getTitle(),"Checkout: Your Information");
@@ -102,9 +101,12 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testBlankAllAndClickContinue() {
+    public void testBlankAllAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
@@ -124,9 +126,12 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testBlankFirstNameAndClickContinue() {
+    public void testBlankFirstNameAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
@@ -146,6 +151,9 @@ public class CustomerYourInformationTest {
     public void testBlankLastNameAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
@@ -163,9 +171,12 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testBlankZipCodeAndClickContinue() {
+    public void testBlankZipCodeAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
@@ -185,11 +196,14 @@ public class CustomerYourInformationTest {
     public void testTextOnlyInputAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
-                "blankZipCode"
+                "textOnlyInput"
         );
         Map<String, String> data = list.get(4);
         String firstName = data.get("firstName");
@@ -204,11 +218,14 @@ public class CustomerYourInformationTest {
     public void testSpecialCharInputAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
-                "blankZipCode"
+                "specialCharInput"
         );
         Map<String, String> data = list.get(5);
         String firstName = data.get("firstName");
@@ -223,11 +240,14 @@ public class CustomerYourInformationTest {
     public void testSpaceAroundInputAndClickContinue() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
-                "blankZipCode"
+                "spaceAroundInput"
         );
         Map<String, String> data = list.get(6);
         String firstName = data.get("firstName");
@@ -239,14 +259,17 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void testTextOnlyInputAndClickCancle()  {
+    public void testTextOnlyInputAndClickCancle() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
-                "blankZipCode"
+                "textOnlyInput"
         );
         Map<String, String> data = list.get(4);
         String firstName = data.get("firstName");
@@ -258,14 +281,17 @@ public class CustomerYourInformationTest {
     }
 
     @Test
-    public void checkDataClearedAfterCancelAndReopenCheckout() {
+    public void checkDataClearedAfterCancelAndReopenCheckout() throws InterruptedException {
         YourCartPage cartPage = new YourCartPage(driver);
         YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.addThreeProduct();
+        productPage.clickShoppingCart();
         cartPage.clickCheckout();
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
-                "blankZipCode"
+                "textOnlyInput"
         );
         Map<String, String> data = list.get(4);
         String firstName = data.get("firstName");
@@ -278,6 +304,27 @@ public class CustomerYourInformationTest {
         Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
         Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
         Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
+    }
+
+    @Test
+    public void testContinueCheckoutWithoutProducts(){
+        YourCartPage cartPage = new YourCartPage(driver);
+        YourInformation yourInfor = new YourInformation(driver);
+        ProductPage productPage = new ProductPage(driver);
+        productPage.clickShoppingCart();
+        cartPage.clickCheckout();
+        List<Map<String, String>> list = ExcelUtils.readExcelData(
+                "login.xlsx",
+                "Sheet2",
+                "textOnlyInput"
+        );
+        Map<String, String> data = list.get(6);
+        String firstName = data.get("firstName");
+        String lastName = data.get("lastName");
+        String zipCode = data.get("zipCode");
+        yourInfor.fillInformationForm(firstName,lastName,zipCode);
+        yourInfor.clickContinue();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-two.html");
     }
 
     @AfterMethod

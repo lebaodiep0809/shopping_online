@@ -70,9 +70,7 @@ public class YourCartPage {
     public boolean isShoppingCartEnable(){
         return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCart)).isEnabled();
     }
-    public boolean isShoppingCartCountDisable(){
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(shoppingCartCount)).isDisplayed();
-    }
+
     public int getShoppingCartCount(){
         try {
             String text = wait.until(
@@ -196,5 +194,13 @@ public class YourCartPage {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(checkout)).isEnabled();
     }
 
+    public void removeThreeProduct() throws InterruptedException {
+        clickRemoveBike();
+        Thread.sleep(3000);
+        clickRemoveBack();
+        Thread.sleep(3000);
+        clickRemoveJacket();
+        Thread.sleep(3000);
+    }
 
 }
