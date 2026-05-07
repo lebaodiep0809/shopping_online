@@ -1,336 +1,308 @@
 package action;
 
-import UI.LoginPage;
-import UI.ProductPage;
-import UI.YourCartPage;
-import UI.YourInformation;
-import Utils.ConfigReader;
+import UI.*;
 import Utils.ExcelUtils;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import Utils.Hook;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Map;
 
-public class CustomerYourInformationTest {
-    WebDriver driver;
-    ConfigReader config;
+public class CustomerYourInformationTest extends Hook {
 
-    @BeforeMethod
-    public void setUp() throws InterruptedException {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        config = new ConfigReader();
-        driver.get(config.getUrl());
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(
-                config.getUsername(),
-                config.getPassword()
+
+    @Test
+    public void testYourInformationUIWithoutNotRemoveProduct() {
+        ProductPage page = new ProductPage(driver);
+        YourCartPage cartPage = new YourCartPage(driver);
+
+        // Add product
+        page.addThreeProduct();
+
+        // Click cart
+        page.clickShoppingCart();
+
+        // Verify đã vào cart page
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/cart.html"
+        );
+
+        // Click checkout
+        cartPage.clickCheckOut();
+
+        // Verify đã vào Your Information page
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/checkout-step-one.html"
+        );
+
+        // LOGO
+        Assert.assertEquals(
+                driver.findElement(YourInformation.LOGO).getText(),
+                "Swag Labs"
+        );
+
+        // TITLE
+        Assert.assertEquals(
+                driver.findElement(YourInformation.TITLE).getText(),
+                "Checkout: Your Information"
+        );
+
+        // CART COUNT
+        Assert.assertEquals(
+                driver.findElement(YourInformation.SHOPPING_CART_COUNT).getText(),
+                "3"
+        );
+
+        // CART ICON
+        Assert.assertTrue(
+                driver.findElement(YourInformation.SHOPPING_CART).isDisplayed()
+        );
+
+        // INPUT PLACEHOLDER
+        Assert.assertEquals(
+                driver.findElement(YourInformation.FIRST_NAME_INPUT)
+                        .getAttribute("placeholder"),
+                "First Name"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.LAST_NAME_INPUT)
+                        .getAttribute("placeholder"),
+                "Last Name"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.POSTAL_CODE_INPUT)
+                        .getAttribute("placeholder"),
+                "Zip/Postal Code"
+        );
+
+        // BUTTON
+        Assert.assertEquals(
+                driver.findElement(YourInformation.CANCEL_BTN).getText(),
+                "Cancel"
+        );
+
+        Assert.assertTrue(
+                driver.findElement(YourInformation.CANCEL_BTN).isDisplayed()
+        );
+
+        Assert.assertTrue(
+                driver.findElement(YourInformation.CONTINUE_BTN).isDisplayed()
+        );
+    }
+    @Test
+    public void testYourInformationUIWithoutRemoveBikeProduct() {
+
+        ProductPage page = new ProductPage(driver);
+
+        page.addThreeProduct();
+
+        driver.findElement(ProductPage.SHOPPING_CART).click();
+
+        driver.findElement(YourCartPage.BIKE_REMOVE_BTN).click();
+
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.SHOPPING_CART_COUNT).getText(),
+                "2"
         );
     }
 
     @Test
-    public void testYourInformationUIWithoutNotRemoveProduct() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
-        Assert.assertEquals(yourInfor.getTitle(),"Checkout: Your Information");
-        Assert.assertEquals(yourInfor.getShoppingCartCount(),3);
-        Assert.assertTrue(yourInfor.isShoppingCart());
-        Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
-        Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
-        Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
-        Assert.assertEquals(yourInfor.getCancel(),"Cancel");
-        Assert.assertTrue(yourInfor.isCancel());
-        Assert.assertEquals(yourInfor.getContinue(),"");
-        Assert.assertTrue(yourInfor.isContinue());
-    }
-
-    @Test
-    public void testYourInformationUIWithoutRemoveBikeProduct() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickRemoveBike();
-        cartPage.clickCheckout();
-        Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
-        Assert.assertEquals(yourInfor.getTitle(),"Checkout: Your Information");
-        Assert.assertEquals(yourInfor.getShoppingCartCount(),2);
-        Assert.assertTrue(yourInfor.isShoppingCart());
-        Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
-        Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
-        Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
-        Assert.assertEquals(yourInfor.getCancel(),"Cancel");
-        Assert.assertTrue(yourInfor.isCancel());
-        Assert.assertEquals(yourInfor.getContinue(),"");
-        Assert.assertTrue(yourInfor.isContinue());
-    }
-
-    @Test
     public void testYourInformationUIWithoutRemoveAllProduct() throws InterruptedException {
+
+        ProductPage page = new ProductPage(driver);
         YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        Thread.sleep(3000);
-        cartPage.removeThreeProduct();
-        Thread.sleep(3000);
-        cartPage.clickCheckout();
-        Assert.assertEquals(yourInfor.getLogo(),"Swag Labs");
-        Assert.assertEquals(yourInfor.getTitle(),"Checkout: Your Information");
-        Assert.assertEquals(yourInfor.getShoppingCartCount(),0);
-        Assert.assertTrue(yourInfor.isShoppingCart());
-        Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
-        Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
-        Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
-        Assert.assertEquals(yourInfor.getCancel(),"Cancel");
-        Assert.assertTrue(yourInfor.isCancel());
-        Assert.assertEquals(yourInfor.getContinue(),"");
-        Assert.assertTrue(yourInfor.isContinue());
+
+        page.addThreeProduct();
+
+        page.clickShoppingCart();
+
+        YourCartPage.removeThreeProductWithCart();
+        cartPage.clickCheckOut();
+
+        Assert.assertTrue(
+                driver.findElements(YourInformation.SHOPPING_CART_COUNT).isEmpty()
+        );
     }
 
     @Test
-    public void testBlankAllAndClickContinue() throws InterruptedException {
+    public void testBlankAllAndClickContinue() {
+
+        ProductPage page = new ProductPage(driver);
         YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
+        YourInformation informationPage = new YourInformation(driver);
+
+        page.addThreeProduct();
+        page.clickShoppingCart();
+        cartPage.clickCheckOut();
+
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
                 "blankAll"
         );
+
         Map<String, String> data = list.get(0);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
-        Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
-        Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
-        yourInfor.clickContinue();
-        Assert.assertEquals(yourInfor.getRequiredFirstName(),"Error: First Name is required");
+
+        informationPage.fillInformationForm(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("zipCode")
+        );
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.ERROR_MESSAGE).getText(),
+                "Error: First Name is required"
+        );
     }
 
     @Test
     public void testBlankFirstNameAndClickContinue() throws InterruptedException {
+
+        ProductPage page = new ProductPage(driver);
         YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
+        YourInformation informationPage = new YourInformation(driver);
+
+        page.addThreeProduct();
+
+        page.clickShoppingCart();
+
+        cartPage.clickCheckOut();
+
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
                 "blankFirstName"
         );
+
         Map<String, String> data = list.get(1);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(yourInfor.getRequiredFirstName(),"Error: First Name is required");
+
+        informationPage.fillInformationForm(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("zipCode")
+        );
+
+        informationPage.clickContinue();
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.ERROR_MESSAGE).getText(),
+                "Error: First Name is required"
+        );
     }
 
     @Test
-    public void testBlankLastNameAndClickContinue() throws InterruptedException {
+    public void testBlankLastNameAndClickContinue() {
+
+        ProductPage page = new ProductPage(driver);
         YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
+        YourInformation informationPage = new YourInformation(driver);
+
+        page.addThreeProduct();
+
+        page.clickShoppingCart();
+
+        cartPage.clickCheckOut();
+
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
                 "blankLastName"
         );
+
         Map<String, String> data = list.get(2);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        Thread.sleep(1000);
-        yourInfor.clickContinue();
-        Assert.assertEquals(yourInfor.getRequiredLastName(),"Error: Last Name is required");
+
+        System.out.println(data);
+
+        informationPage.fillInformationForm(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("zipCode")
+        );
+
+        informationPage.clickContinue();
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.ERROR_MESSAGE).getText(),
+                "Error: Last Name is required"
+        );
     }
 
     @Test
-    public void testBlankZipCodeAndClickContinue() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
+    public void testBlankZipCodeAndClickContinue() {
+
+        ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
+        page.addThreeProduct();
+
+        driver.findElement(ProductPage.SHOPPING_CART).click();
+
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
+
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
                 "blankZipCode"
         );
+
         Map<String, String> data = list.get(3);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(yourInfor.getRequiredLastName(),"Error: Postal Code is required");
+
+        yourInformation.fillInformationForm(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("zipCode")
+        );
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        Assert.assertEquals(
+                driver.findElement(YourInformation.ERROR_MESSAGE).getText(),
+                "Error: Postal Code is required"
+        );
     }
 
     @Test
-    public void testTextOnlyInputAndClickContinue() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
+    public void testTextOnlyInputAndClickContinue() {
+
+        ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
+        page.addThreeProduct();
+
+        driver.findElement(ProductPage.SHOPPING_CART).click();
+
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
+
         List<Map<String, String>> list = ExcelUtils.readExcelData(
                 "login.xlsx",
                 "Sheet2",
                 "textOnlyInput"
         );
+
         Map<String, String> data = list.get(4);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-two.html");
-    }
 
-    @Test
-    public void testSpecialCharInputAndClickContinue() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        List<Map<String, String>> list = ExcelUtils.readExcelData(
-                "login.xlsx",
-                "Sheet2",
-                "specialCharInput"
+        yourInformation.fillInformationForm(
+                data.get("firstName"),
+                data.get("lastName"),
+                data.get("zipCode")
         );
-        Map<String, String> data = list.get(5);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-two.html");
-    }
 
-    @Test
-    public void testSpaceAroundInputAndClickContinue() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        List<Map<String, String>> list = ExcelUtils.readExcelData(
-                "login.xlsx",
-                "Sheet2",
-                "spaceAroundInput"
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/checkout-step-two.html"
         );
-        Map<String, String> data = list.get(6);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-two.html");
-    }
-
-    @Test
-    public void testTextOnlyInputAndClickCancle() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        List<Map<String, String>> list = ExcelUtils.readExcelData(
-                "login.xlsx",
-                "Sheet2",
-                "textOnlyInput"
-        );
-        Map<String, String> data = list.get(4);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickCancel();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/cart.html");
-    }
-
-    @Test
-    public void checkDataClearedAfterCancelAndReopenCheckout() throws InterruptedException {
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.addThreeProduct();
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        List<Map<String, String>> list = ExcelUtils.readExcelData(
-                "login.xlsx",
-                "Sheet2",
-                "textOnlyInput"
-        );
-        Map<String, String> data = list.get(4);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickCancel();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/cart.html");
-        cartPage.clickCheckout();
-        Assert.assertEquals(yourInfor.getFirstNamePlaceholder(),"First Name");
-        Assert.assertEquals(yourInfor.getLastNamePlaceholder(),"Last Name");
-        Assert.assertEquals(yourInfor.getZipCodePlaceholder(),"Zip/Postal Code");
-    }
-
-    @Test
-    public void testContinueCheckoutWithoutProducts(){
-        YourCartPage cartPage = new YourCartPage(driver);
-        YourInformation yourInfor = new YourInformation(driver);
-        ProductPage productPage = new ProductPage(driver);
-        productPage.clickShoppingCart();
-        cartPage.clickCheckout();
-        List<Map<String, String>> list = ExcelUtils.readExcelData(
-                "login.xlsx",
-                "Sheet2",
-                "textOnlyInput"
-        );
-        Map<String, String> data = list.get(6);
-        String firstName = data.get("firstName");
-        String lastName = data.get("lastName");
-        String zipCode = data.get("zipCode");
-        yourInfor.fillInformationForm(firstName,lastName,zipCode);
-        yourInfor.clickContinue();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-step-two.html");
-    }
-
-    @AfterMethod
-    public void  afterMethod(){
-        if (driver != null) {
-            driver.quit();
-        }
     }
 }

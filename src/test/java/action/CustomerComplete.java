@@ -1,83 +1,90 @@
 package action;
 
 import UI.*;
-import Utils.ConfigReader;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import Utils.Hook;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class CustomerComplete {
-    WebDriver driver;
-    ConfigReader config;
+public class CustomerComplete extends Hook {
 
-    @BeforeMethod
-    public void setUp() {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
+    @Test
+    public void testCheckoutCompleteUI() {
 
-        config = new ConfigReader();
-        driver.get(config.getUrl());
+        ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(
-                config.getUsername(),
-                config.getPassword()
+        page.addThreeProduct();
+
+        driver.findElement(ProductPage.SHOPPING_CART).click();
+
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
+
+        yourInformation.fillInformationForm("A", "B", "123");
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        driver.findElement(Overview.FINISH_BTN).click();
+
+        Assert.assertEquals(
+                driver.findElement(Complete.LOGO).getText(),
+                "Swag Labs"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Complete.TITLE).getText(),
+                "Checkout: Complete!"
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Complete.ICON).isDisplayed()
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Complete.SHOPPING_CART).isDisplayed()
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Complete.THANK_YOU).getText(),
+                "Thank you for your order!"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Complete.COMPLETE_TEXT).getText(),
+                "Your order has been dispatched, and will arrive just as fast as the pony can get there!"
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Complete.BACK_HOME).isEnabled()
         );
     }
 
     @Test
-    public void testCheckoutCompleteUI() throws InterruptedException {
+    public void testCheckoutCompleteWithClickBackHome() {
+
         ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
         page.addThreeProduct();
-        page.clickShoppingCart();
-        YourCartPage youCart = new YourCartPage(driver);
-        youCart.clickCheckout();
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
-        Overview overview = new Overview(driver);
-        overview.clickFinish();
-        Complete complete = new Complete(driver);
-        Assert.assertEquals(complete.getLogo(),"Swag Labs");
-        Assert.assertEquals(complete.getTitle(),"Checkout: Complete!");
-        Assert.assertTrue(complete.isIconDisble());
-        Assert.assertTrue(complete.isShoppingCartDisable());
-        Assert.assertEquals(complete.getThankYou(),"Thank you for your order!");
-        Assert.assertEquals(complete.getCompleteText(),"Your order has been dispatched, and will arrive just as fast as the pony can get there!");
-        Assert.assertTrue(complete.isBackHomeDisable());
-    }
 
-    @Test
-    public void testCheckoutCompleteWithClickBackHome() throws InterruptedException {
-        ProductPage page = new ProductPage(driver);
-        page.addThreeProduct();
-        page.clickShoppingCart();
-        YourCartPage youCart = new YourCartPage(driver);
-        youCart.clickCheckout();
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
-        Overview overview = new Overview(driver);
-        overview.clickFinish();
-        Complete complete = new Complete(driver);
-        complete.clickBackHome();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
-        Assert.assertEquals(page.getShoppingCartCount(),0);
-    }
+        driver.findElement(ProductPage.SHOPPING_CART).click();
 
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
 
+        yourInformation.fillInformationForm("A", "B", "123");
 
-    @AfterMethod
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        driver.findElement(Overview.FINISH_BTN).click();
+
+        driver.findElement(Complete.BACK_HOME).click();
+
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/inventory.html"
+        );
+
+        Assert.assertTrue(
+                driver.findElements(ProductPage.SHOPPING_CART_COUNT).isEmpty()
+        );
     }
 }

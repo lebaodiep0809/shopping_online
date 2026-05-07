@@ -1,7 +1,6 @@
 package action;
 
 import UI.LoginPage;
-import Utils.ConfigReader;
 import Utils.ExcelUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -16,19 +15,16 @@ import java.util.Map;
 public class LoginHappyUnHappyCaseTest {
 
     WebDriver driver;
-    ConfigReader config;
 
     @BeforeClass
     public void beforeClass() {
-        config = new ConfigReader();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
     }
 
     @BeforeMethod
     public void beforeMethod() {
-        driver.get(config.getUrl());
-    }
+        driver.get("https://www.saucedemo.com/");    }
 
     @Test
     public void testLoginValid() {
@@ -44,20 +40,13 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
+        LoginPage.performLogin(driver, user,pass);
 
-        Assert.assertEquals(
-                driver.getCurrentUrl(),
-                config.getInventoryUrl()
-        );
+        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
 
-        WebElement logo = driver.findElement(By.className("app_logo"));
+        WebElement logo = driver.findElement(LoginPage.APP_LOGO);
         Assert.assertTrue(logo.isDisplayed());
-
-        int itemCount =
-                driver.findElements(By.className("inventory_item")).size();
-
+        int itemCount = driver.findElements(LoginPage.INVENTORY_ITEM).size();
         Assert.assertTrue(itemCount > 0);
     }
 
@@ -75,11 +64,8 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
-
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
+        LoginPage.performLogin(driver, user,pass);
+        WebElement errorMsg = driver.findElement(LoginPage.ERROR_MESSAGE);
 
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
@@ -101,11 +87,10 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
+        LoginPage.performLogin(driver, user,pass);
 
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
+
+        WebElement errorMsg = driver.findElement(LoginPage.ERROR_MESSAGE);
 
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
@@ -127,11 +112,10 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
+        LoginPage.performLogin(driver, user,pass);
 
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
+
+        WebElement errorMsg = driver.findElement(LoginPage.ERROR_MESSAGE);
 
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
@@ -153,11 +137,10 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
+        LoginPage.performLogin(driver, user,pass);
 
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
+
+        WebElement errorMsg =  driver.findElement(LoginPage.ERROR_MESSAGE);
 
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
@@ -179,11 +162,10 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
+        LoginPage.performLogin(driver, user,pass);
 
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
+
+        WebElement errorMsg =  driver.findElement(LoginPage.ERROR_MESSAGE);
 
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
@@ -205,12 +187,8 @@ public class LoginHappyUnHappyCaseTest {
         String user = data.get("userName");
         String pass = data.get("passWord");
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(user, pass);
-
-        WebElement errorMsg =
-                driver.findElement(By.cssSelector("[data-test='error']"));
-
+        LoginPage.performLogin(driver, user,pass);
+        WebElement errorMsg = driver.findElement(LoginPage.ERROR_MESSAGE);
         Assert.assertTrue(errorMsg.isDisplayed());
         Assert.assertTrue(errorMsg.getText().contains(
                 "Epic sadface: Username is required"

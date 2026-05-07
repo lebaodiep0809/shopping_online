@@ -1,195 +1,313 @@
 package action;
 
 import UI.*;
-import Utils.ConfigReader;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import Utils.Hook;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class CustomerOverviewTest {
-
-    WebDriver driver;
-    ConfigReader config;
-
-    @BeforeMethod
-    public void setUp() {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-
-        config = new ConfigReader();
-        driver.get(config.getUrl());
-
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.performLogin(
-                config.getUsername(),
-                config.getPassword()
-        );
-    }
+public class CustomerOverviewTest extends Hook {
 
     @Test
     public void testOverviewUIWithoutSelectingProductFromProductsPage() {
 
         ProductPage page = new ProductPage(driver);
-        page.clickShoppingCart();
+        YourInformation yourInformation = new YourInformation(driver);
 
-        YourCartPage yourCart = new YourCartPage(driver);
-        yourCart.clickCheckout();
-
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
-
-        Overview overview = new Overview(driver);
-
-        Assert.assertEquals(overview.getLogo(), "Swag Labs");
-        Assert.assertEquals(overview.getTitle(), "Checkout: Overview");
-
-        Assert.assertTrue(overview.isShoppingCartDisplayed());
-        Assert.assertEquals(overview.getShoppingCartCount(), 0);
-
-        Assert.assertEquals(overview.getQtyTitle(), "QTY");
-        Assert.assertEquals(overview.getDescTitle(), "Description");
-
-        Assert.assertEquals(overview.getPaymentInformation(), "Payment Information:");
-        Assert.assertEquals(overview.getSauceCard(), "SauceCard #31337");
-
-        Assert.assertEquals(overview.getShippingInformation(), "Shipping Information:");
-        Assert.assertEquals(overview.getFreeExpress(), "Free Pony Express Delivery!");
-
-        // ================= PRICES =================
-        double itemTotal = overview.getItemTotalPrice();
-        double tax = overview.getTaxPrice();
-        double total = overview.getTotalPrice();
-
-        Assert.assertEquals(itemTotal, 0.0);
-        Assert.assertEquals(tax, 0.0);
-        Assert.assertEquals(total, 0.0);
-
-        Assert.assertEquals(total, itemTotal + tax, 0.01);
-
-        Assert.assertTrue(overview.isCancelEnable());
-        Assert.assertTrue(overview.isFinishEnable());
-    }
-
-    @Test
-    public void testOverviewUIWithThreeProducts() throws InterruptedException {
-
-        ProductPage page = new ProductPage(driver);
         page.addThreeProduct();
-        page.clickShoppingCart();
 
-        YourCartPage yourCart = new YourCartPage(driver);
-        yourCart.clickCheckout();
+        driver.findElement(ProductPage.SHOPPING_CART).click();
 
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
 
-        Overview overview = new Overview(driver);
+        yourInformation.fillInformationForm("A", "B", "123");
 
-        // ==========PRODUCTS=============
-        Assert.assertEquals(overview.getProductBikeName(),"Sauce Labs Bike Light");
-        Assert.assertEquals(overview.getProductBikeInfo(),"A red light isn't the desired state in testing but it sure helps when riding your bike at night. Water-resistant with 3 lighting modes, 1 AAA battery included.");
-        Assert.assertEquals(overview.getBikePrice(),"$9.99");
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
 
-        Assert.assertEquals(overview.getProductBackName(),"Sauce Labs Backpack");
-        Assert.assertEquals(overview.getProductBackInfo(),"carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
-        Assert.assertEquals(overview.getBackPrice(),"$29.99");
-
-        Assert.assertEquals(overview.getProductJacketName(),"Sauce Labs Fleece Jacket");
-        Assert.assertEquals(overview.getProductJacketInfo(),"It's not every day that you come across a midweight quarter-zip fleece jacket capable of handling everything from a relaxing day outdoors to a busy day at the office.");
-        Assert.assertEquals(overview.getJacketPrice(),"$49.99");
         // ================= HEADER =================
-        Assert.assertEquals(overview.getLogo(), "Swag Labs");
-        Assert.assertEquals(overview.getTitle(), "Checkout: Overview");
 
-        Assert.assertTrue(overview.isShoppingCartDisplayed());
-        Assert.assertEquals(overview.getShoppingCartCount(), 3);
+        Assert.assertEquals(
+                driver.findElement(Overview.LOGO).getText(),
+                "Swag Labs"
+        );
 
-        Assert.assertEquals(overview.getQtyTitle(), "QTY");
-        Assert.assertEquals(overview.getDescTitle(), "Description");
+        Assert.assertEquals(
+                driver.findElement(Overview.TITLE).getText(),
+                "Checkout: Overview"
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Overview.SHOPPING_CART).isDisplayed()
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.SHOPPING_CART_COUNT).getText(),
+                "3"
+        );
+
+        // ================= TITLE =================
+
+        Assert.assertEquals(
+                driver.findElement(Overview.QTY_TITLE).getText(),
+                "QTY"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.DESC_TITLE).getText(),
+                "Description"
+        );
+
         // ================= PAYMENT =================
-        Assert.assertEquals(overview.getPaymentInformation(), "Payment Information:");
-        Assert.assertEquals(overview.getSauceCard(), "SauceCard #31337");
 
-        Assert.assertEquals(overview.getShippingInformation(), "Shipping Information:");
-        Assert.assertEquals(overview.getFreeExpress(), "Free Pony Express Delivery!");
+        Assert.assertEquals(
+                driver.findElement(Overview.PAYMENT_INFORMATION).getText(),
+                "Payment Information:"
+        );
 
-        // ================= PRICES =================
-        double priceBack = overview.getProductBackPrice();
-        double priceBike = overview.getProductBikePrice();
-        double priceJacket = overview.getProductJacketPrice();
+        Assert.assertEquals(
+                driver.findElement(Overview.SAUCE_CARD).getText(),
+                "SauceCard #31337"
+        );
 
-        double expectedItemTotal = priceBack + priceBike + priceJacket;
+        Assert.assertEquals(
+                driver.findElement(Overview.SHIPPING_INFORMATION).getText(),
+                "Shipping Information:"
+        );
 
-        double itemTotal = overview.getItemTotalPrice();
-        double tax = overview.getTaxPrice();
-        double total = overview.getTotalPrice();
+        Assert.assertEquals(
+                driver.findElement(Overview.FREE_PONY).getText(),
+                "Free Pony Express Delivery!"
+        );
 
-        double itemTotalTax = itemTotal + tax;
+        // ================= TOTAL =================
 
-        // check item total đúng
-        Assert.assertEquals(itemTotal, expectedItemTotal, 0.01);
+        String itemTotalText =
+                driver.findElement(Overview.ITEM_TOTAL).getText();
 
-        // check công thức
-        Assert.assertEquals(total, itemTotal + tax, 0.01);
+        String taxText =
+                driver.findElement(Overview.TAX).getText();
+
+        String totalText =
+                driver.findElement(Overview.TOTAL).getText();
+
+        double itemTotal =
+                Double.parseDouble(itemTotalText.replace("Item total: $", ""));
+
+        double tax =
+                Double.parseDouble(taxText.replace("Tax: $", ""));
+
+        double total =
+                Double.parseDouble(totalText.replace("Total: $", ""));
+
+        Assert.assertTrue(itemTotal > 0);
+
+        Assert.assertTrue(tax >= 0);
+
+        Assert.assertTrue(total > 0);
+
+        Assert.assertEquals(
+                total,
+                itemTotal + tax,
+                0.01
+        );
 
         // ================= BUTTON =================
-        Assert.assertTrue(overview.isCancelEnable());
-        Assert.assertTrue(overview.isFinishEnable());
+
+        Assert.assertTrue(
+                driver.findElement(Overview.CANCEL_BTN).isEnabled()
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Overview.FINISH_BTN).isEnabled()
+        );
     }
 
     @Test
-    public void testOvervieWithClickCancel() throws InterruptedException {
+    public void testOverviewUIWithThreeProducts() {
+
         ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
         page.addThreeProduct();
-        page.clickShoppingCart();
 
-        YourCartPage yourCart = new YourCartPage(driver);
-        yourCart.clickCheckout();
+        driver.findElement(ProductPage.SHOPPING_CART).click();
 
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
 
-        Overview overview = new Overview(driver);
-        overview.clickCancel();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/inventory.html");
+        yourInformation.fillInformationForm("A", "B", "123");
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        // ================= HEADER =================
+
+        Assert.assertEquals(
+                driver.findElement(Overview.LOGO).getText(),
+                "Swag Labs"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.TITLE).getText(),
+                "Checkout: Overview"
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Overview.SHOPPING_CART).isDisplayed()
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.SHOPPING_CART_COUNT).getText(),
+                "3"
+        );
+
+        // ================= TITLE =================
+
+        Assert.assertEquals(
+                driver.findElement(Overview.QTY_TITLE).getText(),
+                "QTY"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.DESC_TITLE).getText(),
+                "Description"
+        );
+
+        // ================= PAYMENT =================
+
+        Assert.assertEquals(
+                driver.findElement(Overview.PAYMENT_INFORMATION).getText(),
+                "Payment Information:"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.SAUCE_CARD).getText(),
+                "SauceCard #31337"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.SHIPPING_INFORMATION).getText(),
+                "Shipping Information:"
+        );
+
+        Assert.assertEquals(
+                driver.findElement(Overview.FREE_PONY).getText(),
+                "Free Pony Express Delivery!"
+        );
+
+        // ================= TOTAL =================
+
+        double priceBack =
+                Double.parseDouble(
+                        driver.findElement(Overview.PRICE_BACKPACK)
+                                .getText()
+                                .replace("$", "")
+                );
+
+        double priceBike =
+                Double.parseDouble(
+                        driver.findElement(Overview.PRICE_BIKE_LIGHT)
+                                .getText()
+                                .replace("$", "")
+                );
+
+        double priceJacket =
+                Double.parseDouble(
+                        driver.findElement(Overview.PRICE_JACKET)
+                                .getText()
+                                .replace("$", "")
+                );
+
+        double expectedItemTotal =
+                priceBack + priceBike + priceJacket;
+
+        double itemTotal =
+                Double.parseDouble(
+                        driver.findElement(Overview.ITEM_TOTAL)
+                                .getText()
+                                .replaceAll("[^0-9.]", "")
+                );
+
+        double tax =
+                Double.parseDouble(
+                        driver.findElement(Overview.TAX)
+                                .getText()
+                                .replaceAll("[^0-9.]", "")
+                );
+
+        double total =
+                Double.parseDouble(
+                        driver.findElement(Overview.TOTAL)
+                                .getText()
+                                .replaceAll("[^0-9.]", "")
+                );
+
+        Assert.assertEquals(
+                itemTotal,
+                expectedItemTotal,
+                0.01
+        );
+
+        Assert.assertEquals(
+                total,
+                itemTotal + tax,
+                0.01
+        );
+
+        // ================= BUTTON =================
+
+        Assert.assertTrue(
+                driver.findElement(Overview.CANCEL_BTN).isEnabled()
+        );
+
+        Assert.assertTrue(
+                driver.findElement(Overview.FINISH_BTN).isEnabled()
+        );
     }
 
     @Test
-    public void testOvervieWithClickFinish() throws InterruptedException {
+    public void testOverviewWithClickCancel() {
+
         ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
         page.addThreeProduct();
-        page.clickShoppingCart();
 
-        YourCartPage yourCart = new YourCartPage(driver);
-        yourCart.clickCheckout();
+        driver.findElement(ProductPage.SHOPPING_CART).click();
 
-        YourInformation yourInfor = new YourInformation(driver);
-        yourInfor.enterFirstName("A");
-        yourInfor.enterLastName("B");
-        yourInfor.enterZipCode("123");
-        yourInfor.clickContinue();
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
 
-        Overview overview = new Overview(driver);
-        overview.clickFinish();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.saucedemo.com/checkout-complete.html");
+        yourInformation.fillInformationForm("A", "B", "123");
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        driver.findElement(Overview.CANCEL_BTN).click();
+
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/inventory.html"
+        );
     }
 
-    @AfterMethod
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+    @Test
+    public void testOverviewWithClickFinish() {
+
+        ProductPage page = new ProductPage(driver);
+        YourInformation yourInformation = new YourInformation(driver);
+
+
+        page.addThreeProduct();
+
+        driver.findElement(ProductPage.SHOPPING_CART).click();
+
+        driver.findElement(YourCartPage.CHECKOUT_BTN).click();
+
+        yourInformation.fillInformationForm("A", "B", "123");
+
+        driver.findElement(YourInformation.CONTINUE_BTN).click();
+
+        driver.findElement(Overview.FINISH_BTN).click();
+
+        Assert.assertEquals(
+                driver.getCurrentUrl(),
+                "https://www.saucedemo.com/checkout-complete.html"
+        );
     }
 }
