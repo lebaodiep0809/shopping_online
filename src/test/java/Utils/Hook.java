@@ -1,6 +1,6 @@
 package Utils;
 
-import UI.LoginPage;
+import action.LoginPageAction;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -12,19 +12,21 @@ import java.time.Duration;
 public class Hook {
     protected WebDriver driver;
     protected WebDriverWait wait;
+
     @BeforeMethod
     public void setUp() {
-        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         driver.get("https://www.saucedemo.com/");
 
-        LoginPage.performLogin(driver,"standard_user","secret_sauce");
+        LoginPageAction loginAction = new LoginPageAction(driver);
+        loginAction.login("standard_user", "secret_sauce");
     }
 
     @AfterMethod
-    public void  afterMethod(){
+    public void afterMethod(){
         if (driver != null) {
             driver.quit();
         }
